@@ -21,7 +21,7 @@ struct MenuItem
     Category category;
 };
 
-
+// work of art worth 100
 void displayMenu()
 {
     
@@ -60,19 +60,44 @@ int main()
     }
 
     bool selected = false;
+    bool yanyang = false;
     do
     {
+        cout << "Pick soup base 1 > ";
+        int soup_selection1 = 0;
+        if (!(cin >> soup_selection1) || soup_selection1 <= 0 && soup_selection1 > /*category.soupbase*/)
+        {
+
+        }
+
+        cout << "Pick soup base 2 > ";
+        int soup_selection2 = 0;
+        if (!(cin >> soup_selection2))
+        {
+
+        }
+
+        switch (soup_selection1)
+        {
+        case constant expression:
+            /* code */
+            break;
+
+        default:
+            break;
+        }
         // 1. Display base options
-        // 2. Let user pick a base (one)
+        // 2. Let user pick a base (one or special case yanyang)
         // 3. Display addon options (loop)
         // 4. Let user pick as many as they want
         // 5. Display dessert options
         // 6. Confirm order
         // 7. If confirmed, set selected = true;
         // ascii art for receipt
+
     } while (!selected);
 
-    //allow to use 2 flavor if picked the yin yang soup base
+    //allow to use 2 flavor if picked the yanyang base
 
     //
 
