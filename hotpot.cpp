@@ -10,7 +10,10 @@ namespace{
         cin.ignore(1000, '\n');
     }
 
-    void logo();
+    void logo()
+    {
+        cout << "logo\n";
+    }
 }
 
 //enum for menu categorization
@@ -19,14 +22,16 @@ enum class Category
     // selection start from 0 - 2
     SoupBase,
     Addons,
-    Desserts
+    Desserts,
+    Count
 };
 
 enum class HotpotType
 {
     Singular = 1,
     Yuanyang = 2,
-    FourFlavor = 3
+    FourFlavor = 3,
+    Count
 };
 
 //menu structure
@@ -46,6 +51,7 @@ int main()
     */
 
     const int menu_item_amount = 15;
+    const int hotpot_type_amount = 3;
     MenuItem hotpot_menu[menu_item_amount] = {
         // Soup Bases: 4
         {"Mala Soup Base", 15.90, Category::SoupBase},
@@ -67,11 +73,17 @@ int main()
         // Desserts: 2
         {"Boba Hotpot", 10.90, Category::Desserts},
         {"Ais Cream", 3.00, Category::Desserts}};
+    string hotpot_types[hotpot_type_amount] = {
+        {"Singular"},
+        {"Yuanyang"},
+        {"Four-Flavor"}
+    };
 
     bool selected = false;
     bool yuanyang = false;
     int soup_selection1 = 0;
     int soup_selection2 = 0;
+    HotpotType hotpot_type{};
 
     /*
     =================
@@ -79,10 +91,10 @@ int main()
     =================
     */
 
-   //! display logo and introduction
-   // logo();
+    //! display logo and introduction
+    // logo();
 
-   //display menu
+    //display menu
     cout << "Welcome to Chongqing Spicy Hotpot!" << endl;
     for(const auto &item : hotpot_menu)
     {
@@ -90,74 +102,47 @@ int main()
         cout << item.name << " - RM" << fixed << setprecision(2) << item.price << endl;
     }
 
+    //pick hotpot types
     while(true)
     {
         //display hotpot types
-        for(int i = 0; i < hotpot_types; i++)
+        for(int i = 0; i < static_cast<int>(HotpotType::Count); i++)
         {
-            cout << i+1 << ". " << hotpot_type[i] << "\n";
+            cout << i+1 << ". " << hotpot_types[i] << "\n";
         }
 
         //take selection and see if valid
         cout << "What type of hotpot do you want? > ";
         int hotpot_selection = 0;
-        HotpotType hotpot_type = static_cast<HotpotType>(hotpot_selection);
-        
-        if (!(cin >> hotpot_selection) || hotpot_selection <= 0 || hotpot_selection > hotpot_types)
+
+        //is the chosen hotpot type within "HotpotType" scope? if not, repeat la
+        if (!(cin >> hotpot_selection) && hotpot_selection >= static_cast<int>(HotpotType::Singular) && hotpot_selection < static_cast<int>(HotpotType::Count))
         {
             cout << "read again la";
             cleanup();
             continue;
         }
+        hotpot_type = static_cast<HotpotType>(hotpot_selection);
+        break;
     }
 
-    // is selection type = yuanyang, single, or 4 flavor?
+    // loop for flavor depending on hotpot types, cannot pick the same one again
     switch (hotpot_type)
     {
-    case constant expression:
-        /* code */
+    case HotpotType::Singular :
+        while(true)
+        {
+            cout << "pick your flavor > ";
+            if(!(cin >> ))
+        }
         break;
     
     default:
         break;
     }
 
-    if(yuanyang)
-    {
-        while(true)
-        {
-            //basic checks if passes or not
-            cout << "Pick soup base 1 > ";
-            if (!(cin >> soup_selection1) || soup_selection1 <= 0 && soup_selection1 > 4)
-            {
-                cout << "again you.";
-                cleanup();
-                continue;
-            }
-            break;
-        }
-
-        while (true)
-        {
-            cout << "Pick soup base 2 > ";
-            if (!(cin >> soup_selection2))
-            {
-                // soup selection -soup_selection1
-                cout << "again you.";
-                cleanup();
-                continue;
-            }
-            break;
-        }
-    }else if(!yuanyang)
-    {
-
-    }
-
     do
     {
-        
-
         switch (soup_selection1)
         {
         case constant expression:
