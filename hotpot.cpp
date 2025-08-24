@@ -4,15 +4,28 @@
 
 using namespace std;
 namespace{
+    //clean up the stream
     void cleanup()
     {
         cin.clear();
         cin.ignore(1000, '\n');
     }
 
+    //art work here
     void logo()
     {
         cout << "logo\n";
+    }
+
+    // compare between flavor chosen and chosen flavor(s)
+    bool isChosen(string first, string second[])
+    {
+        for (int x = 0; x < second->length(); x++)
+        {
+            if(second[x] == first)
+                return true;
+            
+        }
     }
 }
 
@@ -50,8 +63,13 @@ int main()
     ============
     */
 
-    const int menu_item_amount = 15;
     const int hotpot_type_amount = 3;
+    string hotpot_types[hotpot_type_amount] = {
+        {"Singular"},
+        {"Yuanyang"},
+        {"Four-Flavor"}};
+    string chosen_flavors[4] = {{},{},{},{}};
+    const int menu_item_amount = 15;
     MenuItem hotpot_menu[menu_item_amount] = {
         // Soup Bases: 4
         {"Mala Soup Base", 15.90, Category::SoupBase},
@@ -73,14 +91,9 @@ int main()
         // Desserts: 2
         {"Boba Hotpot", 10.90, Category::Desserts},
         {"Ais Cream", 3.00, Category::Desserts}};
-    string hotpot_types[hotpot_type_amount] = {
-        {"Singular"},
-        {"Yuanyang"},
-        {"Four-Flavor"}
-    };
+
 
     bool selected = false;
-    bool yuanyang = false;
     int soup_selection1 = 0;
     int soup_selection2 = 0;
     HotpotType hotpot_type{};
@@ -92,7 +105,7 @@ int main()
     */
 
     //! display logo and introduction
-    // logo();
+    logo();
 
     //display menu
     cout << "Welcome to Chongqing Spicy Hotpot!" << endl;
@@ -126,32 +139,110 @@ int main()
         break;
     }
 
-    // loop for flavor depending on hotpot types, cannot pick the same one again
+    //flava.
+    int flavor = 0, flavor2 = 0, flavor3 = 0, flavor4 = 0;
+
+    // flavor selection for hotpot(s), cannot pick the same one again
     switch (hotpot_type)
     {
-    case HotpotType::Singular :
-        while(true)
+    case HotpotType::Singular:
+        while (true)
         {
             cout << "pick your flavor > ";
-            if(!(cin >> ))
+            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor \n";
+                cleanup();
+                continue;
+            }
+            chosen_flavors[flavor - 1] = hotpot_types[flavor - 1];
+            break;
         }
         break;
-    
+    case HotpotType::Yuanyang:
+        while (true)
+        {
+            cout << "pick your flavor > ";
+            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor \n";
+                cleanup();
+                continue;
+            }
+            chosen_flavors[flavor - 1] = hotpot_types[flavor - 1];
+            break;
+        }
+
+        while (true)
+        {
+            cout << "pick your flavor2 > ";
+            if (!(cin >> flavor2) || isChosen(hotpot_types[flavor2 - 1], chosen_flavors)  || flavor2 > hotpot_type_amount || flavor2 < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor \n";
+                cleanup();
+            }
+            chosen_flavors[flavor2 - 1] = hotpot_types[flavor2 - 1];
+            break;
+        }
+        break;
+    case HotpotType::FourFlavor:
+        while (true)
+        {
+            cout << "pick your flavor > ";
+            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor \n";
+                cleanup();
+                continue;
+            }
+            chosen_flavors[flavor - 1] = hotpot_types[flavor - 1];
+            break;
+        }
+
+        while (true)
+        {
+            cout << "pick your flavor2 > ";
+            if (!(cin >> flavor2) || isChosen(hotpot_types[flavor2 - 1], chosen_flavors) || flavor2 > hotpot_type_amount || flavor2 < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor no. 2 \n";
+                cleanup();
+            }
+            chosen_flavors[flavor2 - 1] = hotpot_types[flavor2 - 1];
+            break;
+        }
+        break;
+
+        while (true)
+        {
+            cout << "pick your flavor3 > ";
+            if (!(cin >> flavor3) || isChosen(hotpot_types[flavor3 - 1], chosen_flavors) || flavor3 > hotpot_type_amount || flavor3 < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor no. 3 \n";
+                cleanup();
+            }
+            break;
+        }
+        chosen_flavors[flavor3 - 1] = hotpot_types[flavor3 - 1];
+        break;
+
+        while (true)
+        {
+            cout << "pick your flavor4 > ";
+            if (!(cin >> flavor4) || isChosen(hotpot_types[flavor4 - 1], chosen_flavors) || flavor4 > hotpot_type_amount || flavor4 < hotpot_type_amount)
+            {
+                cout << "invalid hotpot flavor no. 4 \n";
+                cleanup();
+            }
+            chosen_flavors[flavor4 - 1] = hotpot_types[flavor4 - 1];
+            break;
+        }
+        break;
+
     default:
+        cout << "what did you do? restart the whole thing again haiya";
         break;
     }
 
-    do
-    {
-        switch (soup_selection1)
-        {
-        case constant expression:
-            /* code */
-            break;
-
-        default:
-            break;
-        }
         // 1. Display base options
         // 2. Let user pick a base (one or special case yuanyang)
         // 3. Display addon options (loop)
@@ -161,11 +252,7 @@ int main()
         // 7. If confirmed, set selected = true;
         // ascii art for receipt
 
-    } while (!selected);
-
     //allow to use 2 flavor if picked the yuanyang base
-
-    //
 
     //for loop display menu each
     //prompt for user inputs
