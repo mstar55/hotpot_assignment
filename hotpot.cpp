@@ -3,34 +3,7 @@
 #include <string>
 
 using namespace std;
-namespace{
-    //clean up the stream
-    void cleanup()
-    {
-        cin.clear();
-        cin.ignore(1000, '\n');
-    }
 
-    //art work here
-    void logo()
-    {
-        cout << "logo\n";
-    }
-
-    // compare between flavor chosen and already chosen flavor(s)
-    bool isChosen(const string first, const MenuItem second[], int size)
-    { //const cause values wont be modified
-        for (int x = 0; x < size; x++)
-        {
-            if(second[x].name == first)
-                return true;
-            
-        }
-        return false;
-    }
-}
-
-//enum for menu categorization, enum = using name instead of number for categorization
 enum class Category 
 {
     // selection start from 0 - 2
@@ -62,6 +35,43 @@ struct OrderLine
     int amount;
     Category category;
 };
+
+namespace{
+    //clean up the stream
+    void cleanup()
+    {
+        cin.clear();
+        cin.ignore(1000, '\n');
+    }
+
+    //art work here
+    void logo()
+    {
+        cout << "       .--.          " << endl;
+        cout << "      (  CHONG     )         " << endl;
+        cout << "      (     QING   )         " << endl;
+        cout << "     ( SPICY HOTPOT )       " << endl;
+        cout << "       -_________-         " << endl;
+        cout << "          |     |            " << endl;
+        cout << "          |_|            " << endl;
+    }
+
+    // compare between flavor chosen and already chosen flavor(s)
+    bool isChosen(const string first, const MenuItem second[], int size)
+    { //const cause values wont be modified
+        for (int x = 0; x < size; x++)
+        {
+            if(second[x].name == first)
+                return true;
+            
+        }
+        return false;
+    }
+}
+
+//enum for menu categorization, enum = using name instead of number for categorization
+
+
 
 int main()
 {
@@ -120,8 +130,6 @@ int main()
     Prompting starts
     =================
     */
-
-    //! display logo and introduction
     logo();
 
     //display menu
@@ -162,7 +170,7 @@ int main()
 
     //flava.
     int flavor = 0, flavor2 = 0, flavor3 = 0, flavor4 = 0;
-    for(int y = 0; y <= hotpot_type_amount; y++)
+    for(int y = 0; y < menu_hotpot_types; y++)
     {
         cout << y + 1 << ". " << hotpot_menu[y].name << endl;
     } 
@@ -176,7 +184,7 @@ int main()
         while (true)
         {
             cout << "pick your flavor > ";
-            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor <= 0)
+            if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
             {
                 cout << "invalid hotpot flavor \n";
                 cleanup();
@@ -192,7 +200,7 @@ int main()
         while (true)
         {
             cout << "pick your flavor > ";
-            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor <= 0)
+            if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
             {
                 cout << "invalid hotpot flavor \n";
                 cleanup();
@@ -205,13 +213,13 @@ int main()
         while (true)
         {
             cout << "pick your flavor2 > ";
-            if (!(cin >> flavor2) || flavor2 > hotpot_type_amount || flavor2 <= 0)
+            if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
             {
                 cout << "invalid hotpot flavor \n";
                 cleanup();
                 continue;
             }
-            if (isChosen(hotpot_menu[flavor2 - 1].name, chosen_flavors, hotpot_type_amount))
+            if (isChosen(hotpot_menu[flavor2 - 1].name, chosen_flavors, menu_hotpot_types))
             {
                 cout << "Flavor repeated haiya\n";
                 cleanup();
@@ -226,7 +234,7 @@ int main()
         while (true)
         {
             cout << "pick your flavor > ";
-            if (!(cin >> flavor) || flavor > hotpot_type_amount || flavor <= 0)
+            if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
             {
                 cout << "invalid hotpot flavor \n";
                 cleanup();
@@ -239,13 +247,13 @@ int main()
         while (true)
         {
             cout << "pick your flavor2 > ";
-            if (!(cin >> flavor2) || flavor2 > hotpot_type_amount || flavor2 <= 0)
+            if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
             {
                 cout << "invalid hotpot flavor no. 2 \n";
                 cleanup();
                 continue;
             }
-            if (isChosen(hotpot_menu[flavor2 - 1].name, chosen_flavors, hotpot_type_amount))
+            if (isChosen(hotpot_menu[flavor2 - 1].name, chosen_flavors, menu_hotpot_types))
             {
                 cout << "Flavor repeated haiya\n";
                 cleanup();
@@ -254,18 +262,17 @@ int main()
             chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1];
             break;
         }
-        break;
 
         while (true)
         {
             cout << "pick your flavor3 > ";
-            if (!(cin >> flavor3) || flavor3 > hotpot_type_amount || flavor3 <= 0)
+            if (!(cin >> flavor3) || flavor3 > menu_hotpot_types || flavor3 <= 0)
             {
                 cout << "invalid hotpot flavor no. 3 \n";
                 cleanup();
                 continue;
             }
-            if(isChosen(hotpot_menu[flavor3 - 1].name, chosen_flavors, hotpot_type_amount))
+            if (isChosen(hotpot_menu[flavor3 - 1].name, chosen_flavors, menu_hotpot_types))
             {
                 cout << "Flavor repeated haiya\n";
                 cleanup();
@@ -278,13 +285,13 @@ int main()
         while (true)
         {
             cout << "pick your flavor4 > ";
-            if (!(cin >> flavor4) || flavor4 > hotpot_type_amount || flavor4 <= 0)
+            if (!(cin >> flavor4) || flavor4 > menu_hotpot_types || flavor4 <= 0)
             {
                 cout << "invalid hotpot flavor no. 4 \n";
                 cleanup();
                 continue;
             }
-            if (isChosen(hotpot_menu[flavor4 - 1].name, chosen_flavors, hotpot_type_amount))
+            if (isChosen(hotpot_menu[flavor4 - 1].name, chosen_flavors, menu_hotpot_types))
             {
                 cout << "Flavor repeated haiya\n";
                 cleanup();
@@ -293,6 +300,7 @@ int main()
             chosen_flavors[flavor4 - 1] = hotpot_menu[flavor4 - 1];
             break;
         }
+        break;
 
     default:
         cout << "what did you do? restart the whole thing again haiya";
@@ -315,6 +323,7 @@ int main()
     cout << "pick your addons or 0 to continue." << endl;
     while(true)
     {   
+        //! give clear indication for 0 to stop and what loop what is selected
         int addon = 0, amount = 0;
         cout << "addon > ";
         if(!(cin >> addon) || addon > menu_addons_types || addon < 0)
@@ -324,7 +333,6 @@ int main()
             continue;
         }else if(addon == 0) //if 0 is pressed, continue to desserts
             break;
-        cout << "\n";
 
         cout <<"amount > ";
         if (!(cin >> amount) || amount <= 0) // mmm
@@ -333,7 +341,6 @@ int main()
             cleanup();
             continue;
         }
-        cout << "\n";
 
         //record it and loop until max_addons
         chosen_addons[addon - 1].name = addons_menu[addon - 1].name;
@@ -345,7 +352,7 @@ int main()
 
     //desserts section
     cout << "pick your dessert (mandatory)\n";
-    
+
 
     // 1. Display base options
     // 2. Let user pick a base (one or special case yuanyang)
