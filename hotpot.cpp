@@ -18,11 +18,11 @@ namespace{
     }
 
     // compare between flavor chosen and already chosen flavor(s)
-    bool isChosen(string first, string second[], int size)
-    {
+    bool isChosen(const string first, const MenuItem second[], int size)
+    { //const cause values wont be modified
         for (int x = 0; x < size; x++)
         {
-            if(second[x] == first)
+            if(second[x].name == first)
                 return true;
             
         }
@@ -55,6 +55,13 @@ struct MenuItem
     double price;
     Category category;
 };
+struct OrderLine
+{
+    string name;
+    double price;
+    int amount;
+    Category category;
+};
 
 int main()
 {
@@ -64,16 +71,20 @@ int main()
     ============
     */
 
-   //! make array for addons max amount 20
-    const int max_addons = 10;
-    
+    //! make array for addons max amount 20
+    const int max_addons = 20;
+    MenuItem chosen_addons[max_addons] = {};
+
+    // max amount of flavor combo, four-flavor type
+    MenuItem chosen_flavors[4] = {{},{},{},{}};
 
     const int hotpot_type_amount = 3;
     string hotpot_types[hotpot_type_amount] = {
         {"Singular"},
         {"Yuanyang"},
         {"Four-Flavor"}};
-    string chosen_flavors[4] = {{},{},{},{}};
+    
+    // menus + fixed array length
     const int menu_hotpot_types = 5;
     const int menu_addons_types = 9;
     const int menu_desserts_types = 2;
@@ -174,8 +185,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].name;
-            cout << "you picked " << chosen_flavors[flavor - 1] << "\n";
+            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
             break;
         }
         break;
@@ -191,7 +201,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].name;
+            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
             break;
         }
 
@@ -210,7 +220,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1].name;
+            chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1];
             break;
         }
         break;
@@ -225,7 +235,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].name;
+            chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
             break;
         }
 
@@ -244,7 +254,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1].name;
+            chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1];
             break;
         }
         break;
@@ -264,7 +274,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor3 - 1] = hotpot_menu[flavor3 - 1].name;
+            chosen_flavors[flavor3 - 1] = hotpot_menu[flavor3 - 1];
             break;
         }
 
@@ -283,7 +293,7 @@ int main()
                 cleanup();
                 continue;
             }
-            chosen_flavors[flavor4 - 1] = hotpot_menu[flavor4 - 1].name;
+            chosen_flavors[flavor4 - 1] = hotpot_menu[flavor4 - 1];
             break;
         }
 
@@ -298,27 +308,54 @@ int main()
     =================
     */
     cout << "\n---------------------------------\n\n";
-    cout << "pick your addons or 0 to continue." << endl;
-    //display addons menu
+    // display addons menu
     for(int i = 0; i < menu_addons_types; i++)
     {
         cout << i+1 << ". " << addons_menu[i].name << " - RM" << fixed << setprecision(2) << addons_menu[i].price << endl;
     }
     
+    // addons selection, max_selection as cap
+    cout << "pick your addons or 0 to continue." << endl;
+    int addon_loop = 0;
     while(true)
     {
-        int addon, amount;
-        cin >> addon;
-    }
-    //while loop of int i, make new array with {i} as its name, remove old array and replace one with the same name? store previous array list and set whole array to empty?
+        if(addon_loop >= max_addons)
+            cout << "max addons reached\n";
+            break;
+        
+        int addon = 0, amount = 0;
+        cout << "addon > ";
+        if(!(cin >> addon))
+        {
+            cout << "invalid addon";
+            cleanup();
+            continue;
+        }else if(addon == 0) //if 0 is pressed
+            break;
+        cout << "\n";
 
-        // 1. Display base options
-        // 2. Let user pick a base (one or special case yuanyang)
-        // 3. Display addon options (can skip and pick as many as needed)
-        // 4. Display dessert options (mandatory)
-        // 5. Confirm order
-        // 6. If confirmed, set selected = true;
-        // ascii art for receipt
+        cout <<"amount > ";
+        if (!(cin >> addon)) //mmm
+        {
+            cout << "invalid amount";
+            cleanup();
+            continue;
+        }
+        cout << "\n";
+
+        //record it and loop until max_addons
+        chosen_addons[addon - 1] = addons_menu[addon - 1];
+        addon_loop++;
+        continue;
+    }
+
+    // 1. Display base options
+    // 2. Let user pick a base (one or special case yuanyang)
+    // 3. Display addon options (can skip and pick as many as needed)
+    // 4. Display dessert options (mandatory)
+    // 5. Confirm order
+    // 6. If confirmed, set selected = true;
+    // ascii art for receipt
 
     //allow to use 2 flavor if picked the yuanyang base
 
