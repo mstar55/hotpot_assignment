@@ -70,14 +70,6 @@ int main()
     Deifnitions
     ============
     */
-
-    //! make array for addons max amount 20
-    const int max_addons = 20;
-    MenuItem chosen_addons[max_addons] = {};
-
-    // max amount of flavor combo, four-flavor type
-    MenuItem chosen_flavors[4] = {{},{},{},{}};
-
     const int hotpot_type_amount = 3;
     string hotpot_types[hotpot_type_amount] = {
         {"Singular"},
@@ -117,6 +109,11 @@ int main()
     //! make a main menu
     MenuItem main_menu[main_menu_size];
     HotpotType hotpot_type{};
+
+    
+    // max amount of flavor combo, four-flavor type
+    MenuItem chosen_flavors[4] = {{},{},{},{}};
+    OrderLine chosen_addons[menu_addons_types] = {};
 
     /*
     =================
@@ -316,26 +313,21 @@ int main()
     
     // addons selection, max_selection as cap
     cout << "pick your addons or 0 to continue." << endl;
-    int addon_loop = 0;
     while(true)
-    {
-        if(addon_loop >= max_addons)
-            cout << "max addons reached\n";
-            break;
-        
+    {   
         int addon = 0, amount = 0;
         cout << "addon > ";
-        if(!(cin >> addon))
+        if(!(cin >> addon) || addon > menu_addons_types || addon < 0)
         {
             cout << "invalid addon";
             cleanup();
             continue;
-        }else if(addon == 0) //if 0 is pressed
+        }else if(addon == 0) //if 0 is pressed, continue to desserts
             break;
         cout << "\n";
 
         cout <<"amount > ";
-        if (!(cin >> addon)) //mmm
+        if (!(cin >> amount) || amount <= 0) // mmm
         {
             cout << "invalid amount";
             cleanup();
@@ -344,10 +336,16 @@ int main()
         cout << "\n";
 
         //record it and loop until max_addons
-        chosen_addons[addon - 1] = addons_menu[addon - 1];
-        addon_loop++;
+        chosen_addons[addon - 1].name = addons_menu[addon - 1].name;
+        chosen_addons[addon - 1].price = addons_menu[addon - 1].price;
+        chosen_addons[addon - 1].category = addons_menu[addon - 1].category;
+        chosen_addons[addon - 1].amount += amount;
         continue;
     }
+
+    //desserts section
+    cout << "pick your dessert (mandatory)\n";
+    
 
     // 1. Display base options
     // 2. Let user pick a base (one or special case yuanyang)
