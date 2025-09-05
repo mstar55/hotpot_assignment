@@ -1,8 +1,18 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cctype>
+#include <ctime>
 
 using namespace std;
+
+// 1. Display base options
+// 2. Let user pick a base (one or special case yuanyang)
+// 3. Display addon_choice options (can skip and pick as many as needed)
+// 4. Display dessert options (mandatory)
+// 5. Confirm order
+// 6. confirm at the end?
+// receipt generation, can use \t for format syntaxing
 
 enum class Category 
 {
@@ -10,7 +20,7 @@ enum class Category
     SoupBase,
     Addons,
     Desserts,
-    Count
+    Count //end, not a category
 };
 enum class HotpotType
 {
@@ -27,6 +37,18 @@ struct OrderLine
     double price;
     int amount;
     Category category;
+
+    void addAmount(int extra){
+        amount += extra;
+    }
+
+    void subtractAmount(int sub){
+        amount -= sub;
+    }
+
+    double netTotal() const{ //nothing will be changed, just returned
+        return price * amount;
+    }
 };
 //menu structure
 struct MenuItem 
@@ -36,8 +58,12 @@ struct MenuItem
     Category category;
 
     //vroom vroom for the housing of amounts
-    OrderLine addAmount(int amount) const{
-        return {name, price, amount, category};
+    //make an orderline struct type of member function that returns the same thing as orderline but with stuff from MenuItem
+    //const because nothing will be modified in MenuItem
+    OrderLine order() const{ 
+
+        // amount = 0 because it is only called for copying and at the start
+        return {name, price, 0, category};
     }
 };
 
@@ -53,25 +79,70 @@ namespace{
     //art work here
     void logo()
     {
-        cout << "       .--.          " << endl;
-        cout << "      (  CHONG     )         " << endl;
-        cout << "      (     QING   )         " << endl;
-        cout << "     ( SPICY HOTPOT )       " << endl;
-        cout << "       -_________-         " << endl;
-        cout << "          |     |            " << endl;
-        cout << "          |_|            " << endl;
+        cout << "       .----------.       " << "\n";
+        cout << "      (  CHONG     )         " << "\n";
+        cout << "      (    QING    )         " << "\n";
+        cout << "     ( SPICY HOTPOT )       " << "\n";
+        cout << "       -__________-         " << "\n";
+        cout << "          |     |            " << "\n";
+        cout << "          |_____|            " << endl;
     }
 
-    // compare between flavor chosen and already chosen flavor(s)
-    bool isChosen(const string first, const MenuItem second[], int size)
+    // compare between flavor chosen and already chosen flavor(s), function is made for hotpot flavors only
+    bool isChosen(const string first, const OrderLine second[], int size)
     { //const cause values wont be modified
         for (int x = 0; x < size; x++)
         {
             if(second[x].name == first)
                 return true;
-            
         }
         return false;
+    }
+
+    string type_hotpot(HotpotType hotpot_type)
+    {
+        switch (hotpot_type)
+        {
+        case HotpotType::Singular:
+            return "Singular";
+        case HotpotType::Yuanyang:
+            return "Yuanyang";
+        case HotpotType::FourFlavor:
+            return "Four Flavor";
+        default:
+            return "n/a";
+        }
+    }
+
+    void receipt(HotpotType hotpot_type, OrderLine hotpot_orders[], OrderLine addon_orders[], OrderLine dessert_orders[], int total_flavors, int total_addons, int total_desserts)
+    {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+
+        cout << "               RECEIPT" << endl;
+        cout << "----------------------------------------" << endl;
+        cout << "        Chong Qing Spicy Hotpot" << endl;
+        cout << "Address: 8, Jalan Raja Abdullah, Chow Kit," << endl;
+        cout << "         50300 Kuala Lumpur," << endl;
+        cout << "Tel: 012-345-6789" << endl;
+        cout << "----------------------------------------" << endl;
+
+        // date time
+        cout << "Date: "
+             << setw(2) << setfill('0') << ltm->tm_mday << "-"
+             << setw(2) << setfill('0') << (ltm->tm_mon + 1) << "-"
+             << (1900 + ltm->tm_year)
+             << "         "
+             << setw(2) << setfill('0') << ltm->tm_hour << ":"
+             << setw(2) << setfill('0') << ltm->tm_min
+             << setfill(' ') << endl;
+
+        cout << "----------------------------------------" << endl;
+        cout << "Hotpot type ordered: " << type_hotpot(hotpot_type) << "\n";
+        for(int i = 0; i < total_flavors; i++)
+        {
+            
+        }
     }
 
     int code()
@@ -89,9 +160,9 @@ namespace{
 
         // menus + fixed array length
         const int menu_hotpot_types = 5;
-        const int menu_addons_types = 9;
-        const int menu_desserts_types = 2;
-        const int main_menu_size = menu_hotpot_types + menu_addons_types + menu_desserts_types;
+        const int addons_type_amount = 9;
+        const int desserts_type_amount = 2;
+        const int main_menu_size = menu_hotpot_types + addons_type_amount + desserts_type_amount;
         MenuItem hotpot_menu[menu_hotpot_types] = {
             // Soup Bases: 4
             {"Mala Soup Base", 15.90, Category::SoupBase},
@@ -99,7 +170,7 @@ namespace{
             {"Pumpkin Soup Base", 20.00, Category::SoupBase},
             {"Herbal Soup Base", 14.00, Category::SoupBase},
             {"Sukiyaki Soup Base", 15.00, Category::SoupBase}};
-        MenuItem addons_menu[menu_addons_types] = {
+        MenuItem addons_menu[addons_type_amount] = {
             // Add-ons: 9
             {"Beef Slices (5pcs)", 12.50, Category::Addons},
             {"Fish Slices (5pcs)", 9.00, Category::Addons},
@@ -111,7 +182,7 @@ namespace{
             {"White Rice", 2.00, Category::Addons},
             {"Maggi Noodles", 2.00, Category::Addons},
         };
-        MenuItem desserts_menu[menu_desserts_types] = {
+        MenuItem desserts_menu[desserts_type_amount] = {
             // Desserts: 2
             {"Boba Hotpot", 10.90, Category::Desserts},
             {"Ais Cream", 3.00, Category::Desserts}};
@@ -121,9 +192,9 @@ namespace{
         HotpotType hotpot_type{};
 
         // max amount of flavor combo, four-flavor type
-        MenuItem chosen_flavors[4] = {{}, {}, {}, {}};
-        OrderLine chosen_addons[menu_addons_types] = {};
-        OrderLine chosen_desserts[menu_desserts_types] = {};
+        OrderLine chosen_flavors[4] = {{}, {}, {}, {}};
+        OrderLine chosen_addons[addons_type_amount] = {};
+        OrderLine chosen_desserts[desserts_type_amount] = {};
 
         /*
         =================
@@ -191,7 +262,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
+                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].order();
                 break;
             }
             break;
@@ -207,7 +278,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
+                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].order();
                 break;
             }
 
@@ -226,7 +297,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1];
+                chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1].order();
                 break;
             }
             break;
@@ -241,7 +312,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1];
+                chosen_flavors[flavor - 1] = hotpot_menu[flavor - 1].order();
                 break;
             }
 
@@ -260,7 +331,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1];
+                chosen_flavors[flavor2 - 1] = hotpot_menu[flavor2 - 1].order();
                 break;
             }
 
@@ -279,7 +350,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor3 - 1] = hotpot_menu[flavor3 - 1];
+                chosen_flavors[flavor3 - 1] = hotpot_menu[flavor3 - 1].order();
                 break;
             }
 
@@ -298,7 +369,7 @@ namespace{
                     cleanup();
                     continue;
                 }
-                chosen_flavors[flavor4 - 1] = hotpot_menu[flavor4 - 1];
+                chosen_flavors[flavor4 - 1] = hotpot_menu[flavor4 - 1].order();
                 break;
             }
             break;
@@ -316,7 +387,7 @@ namespace{
         cout << "\n---------------------------------\n\n";
         cout << "addons selection\n";
         // display addons menu
-        for (int i = 0; i < menu_addons_types; i++)
+        for (int i = 0; i < addons_type_amount; i++)
         {
             cout << i + 1 << ". " << addons_menu[i].name << " - RM" << fixed << setprecision(2) << addons_menu[i].price << "\n";
         }
@@ -329,7 +400,7 @@ namespace{
             //! give clearer indication for 0 to stop and what loop what is selected
             int addon_choice = 0, addon_amount = 0;
             cout << "addon_choice > ";
-            if (!(cin >> addon_choice) || addon_choice > menu_addons_types || addon_choice < 0)
+            if (!(cin >> addon_choice) || addon_choice > addons_type_amount || addon_choice < 0)
             {
                 cout << "invalid addon_choice";
                 cleanup();
@@ -349,34 +420,29 @@ namespace{
             // record it and loop until max_addons
             if (chosen_addons[addon_choice - 1].amount == 0)
             {
-                chosen_addons[addon_choice - 1].name = addons_menu[addon_choice - 1].name;
-                chosen_addons[addon_choice - 1].price = addons_menu[addon_choice - 1].price;
-                chosen_addons[addon_choice - 1].category = addons_menu[addon_choice - 1].category;
+                //just copy addons_menu into chosen_addons but make the amount = 0, see struct MenuItem
+                chosen_addons[addon_choice - 1] = addons_menu[addon_choice - 1].order(); 
+
                 unique_addons++;
+                cout << "added to basket!\n";
             }
-            chosen_addons[addon_choice - 1].amount += addon_amount;
-            cout << "added to basket!\n";
+
+            //adding into "amount" inside chosen_addons, see struct OrderLine
+            chosen_addons[addon_choice - 1].addAmount(addon_amount); 
             continue;
         }
         cout << "you chose: \n";
-        for(int i = 0; i < unique_addons; i++)
+
+        //loop through addons that are not the same that has been chosen before, and print out the price for further changes
+        for(int i = 0; i < addons_type_amount; i++)
         {
-            cout << i + 1 << ". " << chosen_addons[i].name << " - RM" << fixed << setprecision(2) << chosen_addons[i].price << " - " << chosen_addons[i].amount << "order\n";
-        } 
-        
-        
-        
-        //! selection issue, works fine for sigular selection but doesn't show anything for more than one selection
-
-
-
-
-
-
+            if (chosen_addons[i].amount > 0)
+                cout << i + 1 << ". " << chosen_addons[i].name << " - RM" << fixed << setprecision(2) << chosen_addons[i].price << " - " << chosen_addons[i].amount << "order\n";
+        }
 
         // desserts section
         cout << "pick your dessert (at least one is mandatory)\n";
-        for(int z = 0; z < menu_desserts_types; z++)
+        for(int z = 0; z < desserts_type_amount; z++)
         {
             cout << z + 1 << ". " << desserts_menu[z].name << " - RM" << fixed << setprecision(2) << desserts_menu[z].price << "\n";
         }
@@ -385,7 +451,7 @@ namespace{
         while(true)
         {
             int dessert_choice = 0, dessert_amount = 0;
-            if (!(cin >> dessert_choice) || dessert_choice > menu_addons_types || dessert_choice < 0)
+            if (!(cin >> dessert_choice) || dessert_choice > addons_type_amount || dessert_choice < 0)
             {
                 cout << "stop finding errors everywhere";
                 cleanup();
@@ -397,6 +463,7 @@ namespace{
                     break;
                 
                 cout << "pick your dessert (at least one is mandatory)\n";
+                cleanup();
                 continue;
             }
             
@@ -412,30 +479,19 @@ namespace{
             //  record it and loop until max_addons
             if (chosen_desserts[dessert_choice - 1].amount == 0)
             {
-                chosen_desserts[dessert_choice - 1].name = desserts_menu[dessert_choice - 1].name;
-                chosen_desserts[dessert_choice - 1].price = desserts_menu[dessert_choice - 1].price;
-                chosen_desserts[dessert_choice - 1].category = desserts_menu[dessert_choice - 1].category;
+                chosen_desserts[dessert_choice - 1] = desserts_menu[dessert_choice - 1].order();
             }
-            chosen_desserts[dessert_choice - 1].amount += dessert_amount;
+            chosen_desserts[dessert_choice - 1].addAmount(dessert_amount);
             cout << "added to basket!\n";
             picked = true;
             continue;
-        } 
+        }
 
-        // 1. Display base options
-        // 2. Let user pick a base (one or special case yuanyang)
-        // 3. Display addon_choice options (can skip and pick as many as needed)
-        // 4. Display dessert options (mandatory)
-        // 5. Confirm order
-        // 6. If confirmed, set selected = true;
         // ascii art for receipt
-
-        // allow to use 2 flavor if picked the yuanyang base
-
-        // for loop display menu each
-        // prompt for user inputs
-        // receipt generation, can use \t for format syntaxing
-
+        // chosen_desserts, hotpot_type, chosen_flavor
+        // print receipt + calculations
+        receipt(hotpot_type, chosen_flavors, chosen_addons, chosen_desserts, hotpot_type_amount, addons_type_amount, desserts_type_amount);
+        
         return 0;
     }
 }
