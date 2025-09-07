@@ -12,6 +12,7 @@ using namespace std;
 // 4. Display dessert options (mandatory)
 // 5. Confirm order
 // 6. confirm at the end?
+// no vector used
 // receipt generation, can use \t for format syntaxing
 
 enum class Category
@@ -48,6 +49,10 @@ struct OrderLine
         amount -= sub;
     }
 
+    OrderLine report_form() const{
+        return {name, price, amount, category};
+    }
+
     double netTotal() const
     { // nothing will be changed, just returned
         return price * amount;
@@ -69,18 +74,73 @@ struct MenuItem
         return {name, price, 0, category};
     }
 };
+
+const int hotpot_type_amount = 3;
+string hotpot_types[hotpot_type_amount] = {
+    {"Singular"},
+    {"Yuanyang"},
+    {"Four-Flavor"}};
+
+// menus + fixed array length
+const int menu_hotpot_types = 5;
+const int menu_addons_types = 9;
+const int menu_desserts_types = 2;
+MenuItem hotpot_menu[menu_hotpot_types] = {
+    // Soup Bases: 4
+    {"Mala Soup Base", 15.90, Category::SoupBase},
+    {"Tomato Soup Base", 14.50, Category::SoupBase},
+    {"Pumpkin Soup Base", 20.00, Category::SoupBase},
+    {"Herbal Soup Base", 14.00, Category::SoupBase},
+    {"Sukiyaki Soup Base", 15.00, Category::SoupBase}};
+MenuItem addons_menu[menu_addons_types] = {
+    // Add-ons: 9
+    {"Beef Slices (5pcs)", 12.50, Category::Addons},
+    {"Fish Slices (5pcs)", 9.00, Category::Addons},
+    {"Bacon (5pcs)", 10.00, Category::Addons},
+    {"Fresh Tofu (5pcs)", 5.00, Category::Addons},
+    {"Fish Balls (6pcs)", 6.90, Category::Addons},
+    {"Lotus Root (7pcs)", 4.80, Category::Addons},
+    {"Enoki Mushrooms (small)", 5.50, Category::Addons},
+    {"White Rice", 2.00, Category::Addons},
+    {"Maggi Noodles", 2.00, Category::Addons},
+};
+MenuItem desserts_menu[menu_desserts_types] = {
+    // Desserts: 2
+    {"Boba Hotpot", 10.90, Category::Desserts},
+    {"Ice Cream", 3.00, Category::Desserts}
+};
+
+//record prices for Report struct
+struct Prices
+{
+    double net_total;
+    double taxed_total;
+
+    double net() const{
+        return net_total;
+    }
+
+    double taxed() const{
+        return taxed_total;
+    }
+};
+
 // report structure
 struct Report
 {
     string hotpot_type;
-    OrderLine hotpot_flavor_order;
-    OrderLine addons_order;
-    OrderLine desserts_order;
-    int order_no;
+    OrderLine hotpot_flavor_order[menu_hotpot_types];
+    OrderLine addons_order[menu_addons_types];
+    OrderLine desserts_order[menu_desserts_types];
+    Prices prices;
 
-    void report_Form() const{
+    void report_Form_simple() const{
+        cout << "hotpot type: " << hotpot_type << right << setw(20) << "pre-tax: " << setprecision(2) << prices.net() << right << setw(10) << "\ttotal: " << prices.taxed() << "\n";
+    }
+
+    void report_Form_detailed() const{
         //! report format
-        cout << order_no;
+        cout << "order num: ";
     }
 };
 
@@ -157,7 +217,7 @@ namespace
         }
     }
 
-    void receipt(
+    Prices receipt(
         HotpotType hotpot_type,
         OrderLine hotpot_orders[],
         OrderLine addon_orders[],
@@ -250,6 +310,8 @@ namespace
         cout << "==========================================\n";
         cout << "     Thank you! Please Come Again!\n";
         cout << "==========================================\n";
+
+        return {nett, total};
     }
 
     int ordar(Report report[], int report_no)
@@ -259,39 +321,6 @@ namespace
         Deifnitions
         ============
         */
-        const int hotpot_type_amount = 3;
-        string hotpot_types[hotpot_type_amount] = {
-            {"Singular"},
-            {"Yuanyang"},
-            {"Four-Flavor"}};
-
-        // menus + fixed array length
-        const int menu_hotpot_types = 5;
-        const int menu_addons_types = 9;
-        const int menu_desserts_types = 2;
-        MenuItem hotpot_menu[menu_hotpot_types] = {
-            // Soup Bases: 4
-            {"Mala Soup Base", 15.90, Category::SoupBase},
-            {"Tomato Soup Base", 14.50, Category::SoupBase},
-            {"Pumpkin Soup Base", 20.00, Category::SoupBase},
-            {"Herbal Soup Base", 14.00, Category::SoupBase},
-            {"Sukiyaki Soup Base", 15.00, Category::SoupBase}};
-        MenuItem addons_menu[menu_addons_types] = {
-            // Add-ons: 9
-            {"Beef Slices (5pcs)", 12.50, Category::Addons},
-            {"Fish Slices (5pcs)", 9.00, Category::Addons},
-            {"Bacon (5pcs)", 10.00, Category::Addons},
-            {"Fresh Tofu (5pcs)", 5.00, Category::Addons},
-            {"Fish Balls (6pcs)", 6.90, Category::Addons},
-            {"Lotus Root (7pcs)", 4.80, Category::Addons},
-            {"Enoki Mushrooms (small)", 5.50, Category::Addons},
-            {"White Rice", 2.00, Category::Addons},
-            {"Maggi Noodles", 2.00, Category::Addons},
-        };
-        MenuItem desserts_menu[menu_desserts_types] = {
-            // Desserts: 2
-            {"Boba Hotpot", 10.90, Category::Desserts},
-            {"Ice Cream", 3.00, Category::Desserts}};
 
         HotpotType hotpot_type{};
 
@@ -552,7 +581,7 @@ namespace
         while (true)
         {
             int dessert_choice = 0, dessert_amount = 0;
-            if (!(cin >> dessert_choice) || dessert_choice > menu_addons_types || dessert_choice < 0)
+            if (!(cin >> dessert_choice) || dessert_choice > menu_desserts_types || dessert_choice < 0)
             {
                 cout << "stop finding errors everywhere";
                 cleanup();
@@ -591,11 +620,16 @@ namespace
         // ascii art for receipt
         // chosen_desserts, hotpot_type, chosen_flavor
         // print receipt + calculations
-        receipt(hotpot_type, chosen_flavors, chosen_addons, chosen_desserts, chosen_flavors_cap, menu_addons_types, menu_desserts_types);
+        report[report_no].prices = receipt(hotpot_type, chosen_flavors, chosen_addons, chosen_desserts, chosen_flavors_cap, menu_addons_types, menu_desserts_types);
         
         //copy everything into report's current iteration
         report[report_no].hotpot_type = type_hotpot(hotpot_type);
-        report[report_no].hotpot_flavor_order = chosen_flavors; //! left off here
+        for (int i = 0; i < chosen_flavors_cap; i++)
+            report[report_no].hotpot_flavor_order[i] = chosen_flavors[i];
+        for (int i = 0; i < menu_addons_types; i++)
+            report[report_no].addons_order[i] = chosen_addons[i];
+        for (int i = 0; i < menu_desserts_types; i++)
+            report[report_no].desserts_order[i] = chosen_desserts[i];
 
         cout << "\n\npress any key to continue > ";
         cleanup();
@@ -610,10 +644,14 @@ namespace
         cout << "\n---------------------------------\n\n";
         for(int i = 0; i < max_rep; i++)
         {
-            cout << "fuck"; //!use orderline.report_Form();
+            if(rep[i].prices.net() > 0)
+            {
+                cout << i + 1 << ". ";
+                rep[i].report_Form_simple();
+            }
         }
 
-        cout << "\npress any key to continue >";
+        cout << "\ninput order number to view detailed report or 0 to continue >";
         cleanup();
         cin.get();
     }
@@ -641,13 +679,13 @@ namespace
             {
             case 1:
                 // at max set report, don't record anymore
-                if (reports[max_reports - 1].order_no == max_reports - 1)
+                if (iteration >= max_reports)
                 {
                     cout << "max orders reached per one instance\n";
                     cleanup();
                     continue;
                 }
-                ordar(reports, iteration);
+                iteration = ordar(reports, iteration);
                 break;
 
             case 2:
