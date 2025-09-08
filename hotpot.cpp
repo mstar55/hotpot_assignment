@@ -153,11 +153,11 @@ struct Report
 
         // display details for the singular order
         //  Table header
-        cout << "------------------------------------------\n";
+        cout << "===========================================\n";
         cout << left << setw(25) << setfill(' ') << "Item"
              << right << setw(8) << "Qty"
              << right << setw(10) << "Price" << "\n";
-        cout << "------------------------------------------\n";
+        cout << "-------------------------------------------\n";
 
         // Hotpot Type
         cout << "Hotpot Type: " << hotpot_type << "\n";
@@ -199,7 +199,7 @@ struct Report
             }
         }
 
-        cout << "------------------------------------------\n";
+        cout << "-------------------------------------------\n";
         cout << left << setw(25) << "Subtotal"
              << right << setw(18) << fixed << setprecision(2) << prices.net() << "\n";
 
@@ -209,7 +209,7 @@ struct Report
         cout << left << setw(25) << "TOTAL"
              << right << setw(18) << fixed << setprecision(2) << prices.taxed_final() << "\n";
 
-        cout << "==========================================\n";
+        cout << "===========================================\n";
     }
 };
 
@@ -222,50 +222,44 @@ namespace
         cin.ignore(1000, '\n');
     }
 
+    // orginally mean new category but is too useful, so got used elsewhere
     void newCat()
     {
-        system("CLS");
-        // system("clear"); // Linux / macOS
-
-        std::cout << "-------------------------\n";
+        //based on system cmd clearing
+        #ifdef _WIN32
+            system("CLS");
+        #else
+            system("clear");
+        #endif
     }
 
     // art work here
     void logo()
     {
-        cout << "                      @@@@@@                       @                                                " << "\n";
-        cout << "                         @@  @ @                  @                                                 " << "\n";
-        cout << "                          @   @ .@              @@                          @@@@@@                  " << "\n";
-        cout << "                           @@     @       @    @         @@               @*      @@                " << "\n";
-        cout << "                              =@@@ @     *    @           @@            @@     =@  @                " << "\n";
-        cout << "                                 @ @    @@        @        @           @    @@# @@@                 " << "\n";
-        cout << "                                 @@@   @@         @        @         -@   @-  @@                    " << "\n";
-        cout << "                 @@             @@    @@         @        @@           @ @   @:                     " << "\n";
-        cout << "         #@  @@@@  @@@@              @@          @       @@             @@@@@                       " << "\n";
-        cout << "          @           @              @                  @@                                          " << "\n";
-        cout << "           @           @             @                 @@   @@  @@@@@                               " << "\n";
-        cout << "            @    @@@@@@              @@                @    @  @     @@                             " << "\n";
-        cout << "            @@@@   @   @@             @@                    @  @@@@  @@                             " << "\n";
-        cout << "                @@@  @   @               @                   @       @                              " << "\n";
-        cout << "                      @@@@                 @@@@@@@@@@@@        @@@@@@                               " << "\n";
-        cout << "                                          @@@@@@@@@@@@@@                                            " << "\n";
-        cout << "                                                                                                    " << "\n";
-        cout << "                  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                     " << "\n";
-        cout << "               @@  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  @@@                 " << "\n";
-        cout << "               @@                                                               @@@                 " << "\n";
-        cout << "              @@% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ @@@@                " << "\n";
-        cout << "           #@@@    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   @@@@              " << "\n";
-        cout << "                    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   @@@@@                      " << "\n";
-        cout << "                     @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@                       " << "\n";
-        cout << "                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@                         " << "\n";
-        cout << "                        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@@                           " << "\n";
-        cout << "                           @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      @@@@@@@                              " << "\n";
-        cout << "                                @@@@@@@@@@@@@@@@@@       #@@@@@@@@                                  " << "\n";
-        cout << "                                        @@@@@@@@@@@@@@@@@#                                          " << "\n";
-        cout << "                                @@@@@@@@                 @@@@@@@@                                   " << "\n";
-        cout << "                                @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                  " << "\n";
-        cout << "                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                  " << "\n";
-        cout << "                              @@+================================@                                  " << endl;
+        cout << "                      @@     @       @    @         @@               @*      @@        " << "\n";
+        cout << "                         =@@@ @     *    @           @@            @@     =@  @        " << "\n";
+        cout << "                            @@@   @@         @        @         -@   @-  @@            " << "\n";
+        cout << "            @@             @@    @@         @        @@           @ @   @:             " << "\n";
+        cout << "     @           @              @                  @@                                  " << "\n";
+        cout << "      @           @             @                 @@   @@  @@@@@                       " << "\n";
+        cout << "       @@@@   @   @@             @@                    @  @@@@  @@                     " << "\n";
+        cout << "           @@@  @   @               @                   @       @                      " << "\n";
+        cout << "                 @@@@                 @@@@@@@@@@@@        @@@@@@                       " << "\n";
+        cout << "                                     @@@@@@@@@@@@@@                                    " << "\n";
+        cout << "                                                                                       " << "\n";
+        cout << "             @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@             " << "\n";
+        cout << "          @@  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  @@@         " << "\n";
+        cout << "          @@                                                               @@@         " << "\n";
+        cout << "         @@% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ @@@@        " << "\n";
+        cout << "      #@@@    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   @@@@      " << "\n";
+        cout << "                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@                 " << "\n";
+        cout << "                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    @@@@@@@                   " << "\n";
+        cout << "                      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      @@@@@@@                      " << "\n";
+        cout << "                           @@@@@@@@@@@@@@@@@@       #@@@@@@@@                          " << "\n";
+        cout << "                                   @@@@@@@@@@@@@@@@@#                                  " << "\n";
+        cout << "                           @@@@@@@@                 @@@@@@@@                           " << "\n";
+        cout << "                           @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                          " << "\n";
+        cout << "                         @@+================================@                          " << endl;
     }
 
     // compare between flavor chosen and already chosen flavor(s), function is made for hotpot flavors only
@@ -439,6 +433,7 @@ namespace
             }
 
             // take selection and see if valid
+            cout << "---------------------------------\n";
             cout << "\nWhat type of hotpot do you want?\n> ";
             int hotpot_selection = 0;
 
@@ -456,7 +451,7 @@ namespace
         // flava.
         // new lines
         newCat();
-        cout << "Choose your soup base:\n";
+        cout << "Choose your soup base:\n\n";
         int flavor = 0, flavor2 = 0, flavor3 = 0, flavor4 = 0;
         for (int y = 0; y < menu_hotpot_types; y++)
         {
@@ -468,10 +463,11 @@ namespace
         switch (hotpot_type)
         {
         case HotpotType::Singular:
+            cout << "\n---------------------------------\n\n";
             cout << "\nYou chose Singular-flavor hotpot\n";
             while (true)
             {
-                cout << "\npick your flavor\n> ";
+                cout << "pick your flavor\n> ";
                 if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -483,7 +479,8 @@ namespace
             }
             break;
         case HotpotType::Yuanyang:
-            cout << "You chose Yuanyang hotpot, pick 2 flavors\n";
+            cout << "\n---------------------------------\n\n";
+            cout << "\nYou chose Yuanyang hotpot, pick 2 flavors\n";
             while (true)
             {
                 cout << "pick your flavor\n> ";
@@ -500,7 +497,7 @@ namespace
 
             while (true)
             {
-                cout << "\npick your flavor2\n> ";
+                cout << "\npick your flavor 2\n> ";
                 if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -519,6 +516,7 @@ namespace
             }
             break;
         case HotpotType::FourFlavor:
+            cout << "\n---------------------------------\n\n";
             cout << "You chose Four-flavor hotpot, pick 4 flavors\n";
             while (true)
             {
@@ -536,7 +534,7 @@ namespace
 
             while (true)
             {
-                cout << "pick your flavor\n> ";
+                cout << "pick your flavor 2\n> ";
                 if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 2 \n";
@@ -556,7 +554,7 @@ namespace
 
             while (true)
             {
-                cout << "\npick your flavor3\n> ";
+                cout << "\npick your flavor 3\n> ";
                 if (!(cin >> flavor3) || flavor3 > menu_hotpot_types || flavor3 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 3 \n";
@@ -576,7 +574,7 @@ namespace
 
             while (true)
             {
-                cout << "\npick your flavor4\n> ";
+                cout << "\npick your flavor 4\n> ";
                 if (!(cin >> flavor4) || flavor4 > menu_hotpot_types || flavor4 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 4 \n";
@@ -607,7 +605,7 @@ namespace
         */
        //new lines
         newCat();
-        cout << "Pick your addons\n";
+        cout << "Pick your addons\n\n";
         // display addons menu
         for (int i = 0; i < menu_addons_types; i++)
         {
@@ -615,7 +613,8 @@ namespace
         }
 
         // addons selection, max_selection as cap
-        cout << "\npick your addon(s) or 0 to continue." << endl;
+        cout << "---------------------------------\n";
+        cout << "\npick your addon(s) or 0 to continue.\n(use negative numbers to subtract from order)\n" << endl;
         while (true)
         {
             int addon_choice = 0, addon_amount = 0;
@@ -637,13 +636,13 @@ namespace
                     for (int i = 0; i < menu_addons_types; i++)
                     {
                         if (chosen_addons[i].amount > 0)
-                            cout << i + 1 << ". " << chosen_addons[i].name << "\t-\t" << setw(5) << " RM" << fixed << setprecision(2) << chosen_addons[i].price << "\t-\t" << chosen_addons[i].amount << "\n";
+                            cout << i + 1 << ". " << chosen_addons[i].name << setw(30) << "-" << setw(5) << " RM" << fixed << setprecision(2) << chosen_addons[i].price << setw(7) << "-" << setw(7) << chosen_addons[i].amount << "\n";
                     }
 
                     //put inside if functin because, if basket doesn't have item, don't need to ask to continue
                     char conti = ' ';
                     cout << "\ndo you wish to continue? (y/n)\n> ";
-                    if(cin >> conti || toupper(conti) == 'Y')
+                    if(cin >> conti && toupper(conti) == 'Y')
                         break;
                 }
                 continue;
@@ -688,17 +687,19 @@ namespace
         ===================
         */
         newCat();
-        cout << "pick your dessert (at least one is mandatory)\n";
+        cout << "pick your dessert (at least one is mandatory)";
+        cout << "\n\n---------------------------------\n";
         for (int z = 0; z < menu_desserts_types; z++)
         {
             cout << z + 1 << ". " << desserts_menu[z].name << " - RM" << fixed << setprecision(2) << desserts_menu[z].price << "\n";
         }
 
-        cout << "\npick your desserts or 0 to continue" << endl;
+        cout << "\n---------------------------------\n";
+        cout << "pick your desserts or 0 to continue" << endl;
         while (true)
         {
             int dessert_choice = 0, dessert_amount = 0;
-            cout << "\ndessert > ";
+            cout << "dessert > ";
             if (!(cin >> dessert_choice) || dessert_choice > menu_desserts_types || dessert_choice < 0)
             {
                 cout << "stop finding errors everywhere\n";
@@ -717,6 +718,8 @@ namespace
 
                 if (exists_item(chosen_desserts, menu_desserts_types))
                 {
+                    newCat();
+                    cout << "\n\n";
                     cout << "you chose desserts: \n";
 
                     // loop through desserts, and see which exists
@@ -724,14 +727,16 @@ namespace
                     {
                         if (chosen_desserts[i].amount > 0)
                             cout << "\n"
-                                 << i + 1 << ". " << chosen_desserts[i].name << " - RM" << fixed << setprecision(2) << chosen_desserts[i].price << " - " << chosen_desserts[i].amount << "order\n";
+                                 << i + 1 << ". " << chosen_desserts[i].name << " - RM" << fixed << setprecision(2) << chosen_desserts[i].price << " - " << chosen_desserts[i].amount << " " << "order";
                     }
                 }
 
                 char conti = ' ';
+                cout << "\n---------------------------------\n";
                 cout << "\ndo you wish to continue? (y/n)\n> ";
                 if (cin >> conti && toupper(conti) == 'Y')
                     break;
+                cout << " ";
                 continue;
             }
 
@@ -750,7 +755,7 @@ namespace
             if (dessert_amount > 0)
             {
                 chosen_desserts[dessert_choice - 1].addAmount(dessert_amount);
-                cout << dessert_amount << chosen_desserts[dessert_choice - 1].name << " added to basket!\n";
+                cout << dessert_amount << " " << chosen_desserts[dessert_choice - 1].name << " added to basket!\n";
             }
             else if (dessert_amount < 0)
             {
@@ -769,6 +774,7 @@ namespace
         // ascii art for receipt
         // chosen_desserts, hotpot_type, chosen_flavor
         // print receipt + calculations
+        newCat();
         report[report_no].prices = receipt(hotpot_type, chosen_flavors, chosen_addons, chosen_desserts, chosen_flavors_cap, menu_addons_types, menu_desserts_types);
         
         //copy everything into report's current iteration
@@ -784,7 +790,7 @@ namespace
         cleanup();
         cin.get();
 
-        return report_no++;
+        return report_no + 1;
     }
 
     void report(Report rep[], int max_rep)
@@ -792,8 +798,8 @@ namespace
         int chosen_report = 0;
         do
         {
-            cout << "Report for Chong Ching Hotpot\n";
-            cout << "\n---------------------------------\n\n";
+            newCat();
+            cout << "Report for Chong Ching Hotpot\n\n";
             for(int i = 0; i < max_rep; i++)
             {
                 if(rep[i].prices.net() > 0)
@@ -803,9 +809,11 @@ namespace
                 }
             }
 
+            cout << "\n---------------------------------\n";
             cout << "\ninput order number to view detailed report or 0 to continue\n> ";
-            if((cin >> chosen_report) || chosen_report > 0)
+            if((cin >> chosen_report) && chosen_report > 0 && chosen_report <= max_rep)
             {
+                cout << "\n\n";
                 rep[chosen_report - 1].report_Form_detailed(chosen_report);
             }
             else{
@@ -813,12 +821,12 @@ namespace
                 cout << "\n\ninvalid input" << endl;
                 continue;
             }
-            cout << "\npress any key to continue\n> ";
+            cout << "\npress any key to continue\n> "; //test is inputing 0 still let me leave this
             cleanup();
             cin.get();
             break;
 
-        }while (chosen_report == 0);
+        }while (chosen_report != 0);
     }
 
     int code()
@@ -829,11 +837,12 @@ namespace
         Report reports[max_reports] = {};
         do
         {
+            newCat();
             choice = 0;
             logo();
 
             // display menu
-            cout << "\n========================================================================\n";
+            cout << "\n========================================================================================================\n";
             cout << "Welcome to Chongqing Spicy Hotpot!\n" << endl;
             cout << "1. order\n" << "2. report\n" << "3. exit\n> ";
 
