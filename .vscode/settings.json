@@ -68,6 +68,8 @@
     "utility": "cpp",
     "variant": "cpp",
     "ranges": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "text_encoding": "cpp",
+    "typeinfo": "cpp"
   }
 }

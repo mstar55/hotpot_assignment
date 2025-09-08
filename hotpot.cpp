@@ -44,13 +44,17 @@ struct OrderLine
         amount += extra;
     }
 
-    void subtractAmount(int sub)
+    bool subtractAmount(int sub)
     {
-        amount -= sub;
-    }
+        // added bc +(-1) = -1, -(-1) = 1
+        amount += sub;
 
-    OrderLine report_form() const{
-        return {name, price, amount, category};
+        //safety
+        if(amount < 0){
+            amount = 0;
+            return false;
+        } 
+        return true;
     }
 
     double netTotal() const
@@ -115,12 +119,18 @@ struct Prices
 {
     double net_total;
     double taxed_total;
+    double service_tax;
 
     double net() const{
         return net_total;
     }
 
-    double taxed() const{
+    double tax_amount() const {
+        return service_tax;
+    }
+
+    double taxed_final() const
+    {
         return taxed_total;
     }
 };
@@ -135,12 +145,71 @@ struct Report
     Prices prices;
 
     void report_Form_simple() const{
-        cout << "hotpot type: " << hotpot_type << right << setw(20) << "pre-tax: " << setprecision(2) << prices.net() << right << setw(10) << "\ttotal: " << prices.taxed() << "\n";
+        //display simple list of order
+        cout << "hotpot type: " << hotpot_type << right << setw(20) << "pre-tax: " << setprecision(2) << prices.net() << right << setw(10) << "\ttotal: " << prices.taxed_final() << "\n";
     }
 
-    void report_Form_detailed() const{
-        //! report format
-        cout << "order num: ";
+    void report_Form_detailed(int order_num) const{
+
+        // display details for the singular order
+        //  Table header
+        cout << "------------------------------------------\n";
+        cout << left << setw(25) << setfill(' ') << "Item"
+             << right << setw(8) << "Qty"
+             << right << setw(10) << "Price" << "\n";
+        cout << "------------------------------------------\n";
+
+        // Hotpot Type
+        cout << "Hotpot Type: " << hotpot_type << "\n";
+
+        for (int i = 0; i < menu_hotpot_types; i++)
+        {
+            if (!hotpot_flavor_order[i].name.empty() && hotpot_flavor_order[i].price > 0)
+            {
+                cout << left << setw(25) << hotpot_flavor_order[i].name
+                     << right << setw(8) << 1 // hotpot base always qty 1
+                     << right << setw(10) << fixed << setprecision(2) << hotpot_flavor_order[i].price
+                     << "\n";
+            }
+        }
+
+        // Addons
+        cout << "\nAddons: \n";
+        for (int i = 0; i < menu_addons_types; i++)
+        {
+            if (addons_order[i].amount > 0)
+            {
+                cout << left << setw(25) << addons_order[i].name
+                     << right << setw(8) << addons_order[i].amount
+                     << right << setw(10) << fixed << setprecision(2) << addons_order[i].netTotal()
+                     << "\n";
+            }
+        }
+
+        // Desserts
+        cout << "\nDesserts: \n";
+        for (int i = 0; i < menu_desserts_types; i++)
+        {
+            if (desserts_order[i].amount > 0)
+            {
+                cout << left << setw(25) << desserts_order[i].name
+                     << right << setw(8) << desserts_order[i].amount
+                     << right << setw(10) << fixed << setprecision(2) << desserts_order[i].netTotal()
+                     << "\n";
+            }
+        }
+
+        cout << "------------------------------------------\n";
+        cout << left << setw(25) << "Subtotal"
+             << right << setw(18) << fixed << setprecision(2) << prices.net() << "\n";
+
+        cout << left << setw(25) << "Service Tax (6%)"
+             << right << setw(18) << fixed << setprecision(2) << prices.tax_amount() << "\n";
+
+        cout << left << setw(25) << "TOTAL"
+             << right << setw(18) << fixed << setprecision(2) << prices.taxed_final() << "\n";
+
+        cout << "==========================================\n";
     }
 };
 
@@ -151,6 +220,14 @@ namespace
     {
         cin.clear();
         cin.ignore(1000, '\n');
+    }
+
+    void newCat()
+    {
+        system("CLS");
+        // system("clear"); // Linux / macOS
+
+        std::cout << "-------------------------\n";
     }
 
     // art work here
@@ -199,6 +276,17 @@ namespace
             if (second[x].name == first)
                 return true;
         }
+        return false;
+    }
+
+    bool exists_item(OrderLine cat_order[], int size)
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            if(!cat_order[i].name.empty())
+                return true;
+        }
+        
         return false;
     }
 
@@ -311,7 +399,7 @@ namespace
         cout << "     Thank you! Please Come Again!\n";
         cout << "==========================================\n";
 
-        return {nett, total};
+        return {nett, total, service_tax};
     }
 
     int ordar(Report report[], int report_no)
@@ -340,7 +428,9 @@ namespace
         while (true)
         {
             // if second time ordering, ask if want to pick soup
-            cout << "\n---------------------------------\n\n";
+            // new lines
+            newCat();
+            cout << "Our hotpot types: " << endl;
 
             // display hotpot types from first to last
             for (int i = 0; i < static_cast<int>(HotpotType::Count) - 1; i++)
@@ -349,8 +439,7 @@ namespace
             }
 
             // take selection and see if valid
-            cout << "\n---------------------------------\n\n";
-            cout << "What type of hotpot do you want? > ";
+            cout << "\nWhat type of hotpot do you want?\n> ";
             int hotpot_selection = 0;
 
             // is the chosen hotpot type within "HotpotType" scope? if not, repeat la
@@ -365,6 +454,9 @@ namespace
         }
 
         // flava.
+        // new lines
+        newCat();
+        cout << "Choose your soup base:\n";
         int flavor = 0, flavor2 = 0, flavor3 = 0, flavor4 = 0;
         for (int y = 0; y < menu_hotpot_types; y++)
         {
@@ -376,11 +468,10 @@ namespace
         switch (hotpot_type)
         {
         case HotpotType::Singular:
-            cout << "\n---------------------------------\n\n";
-            cout << "You chose Singular-flavor hotpot\n";
+            cout << "\nYou chose Singular-flavor hotpot\n";
             while (true)
             {
-                cout << "pick your flavor > ";
+                cout << "\npick your flavor\n> ";
                 if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -392,11 +483,10 @@ namespace
             }
             break;
         case HotpotType::Yuanyang:
-            cout << "\n---------------------------------\n\n";
             cout << "You chose Yuanyang hotpot, pick 2 flavors\n";
             while (true)
             {
-                cout << "pick your flavor > ";
+                cout << "pick your flavor\n> ";
                 if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -410,7 +500,7 @@ namespace
 
             while (true)
             {
-                cout << "pick your flavor2 > ";
+                cout << "\npick your flavor2\n> ";
                 if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -432,7 +522,7 @@ namespace
             cout << "You chose Four-flavor hotpot, pick 4 flavors\n";
             while (true)
             {
-                cout << "pick your flavor > ";
+                cout << "pick your flavor\n> ";
                 if (!(cin >> flavor) || flavor > menu_hotpot_types || flavor <= 0)
                 {
                     cout << "invalid hotpot flavor \n";
@@ -446,7 +536,7 @@ namespace
 
             while (true)
             {
-                cout << "pick your flavor2 > ";
+                cout << "pick your flavor\n> ";
                 if (!(cin >> flavor2) || flavor2 > menu_hotpot_types || flavor2 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 2 \n";
@@ -466,7 +556,7 @@ namespace
 
             while (true)
             {
-                cout << "pick your flavor3 > ";
+                cout << "\npick your flavor3\n> ";
                 if (!(cin >> flavor3) || flavor3 > menu_hotpot_types || flavor3 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 3 \n";
@@ -486,7 +576,7 @@ namespace
 
             while (true)
             {
-                cout << "pick your flavor4 > ";
+                cout << "\npick your flavor4\n> ";
                 if (!(cin >> flavor4) || flavor4 > menu_hotpot_types || flavor4 <= 0)
                 {
                     cout << "invalid hotpot flavor no. 4 \n";
@@ -515,8 +605,9 @@ namespace
         Addons selection
         =================
         */
-        cout << "\n---------------------------------\n\n";
-        cout << "addons selection\n";
+       //new lines
+        newCat();
+        cout << "Pick your addons\n";
         // display addons menu
         for (int i = 0; i < menu_addons_types; i++)
         {
@@ -524,81 +615,128 @@ namespace
         }
 
         // addons selection, max_selection as cap
-        int unique_addons = 0;
-        cout << "\npick your addons or 0 to continue." << endl;
+        cout << "\npick your addon(s) or 0 to continue." << endl;
         while (true)
         {
             int addon_choice = 0, addon_amount = 0;
-            cout << "addon_choice > ";
+            cout << "addon choice > ";
             if (!(cin >> addon_choice) || addon_choice > menu_addons_types || addon_choice < 0)
             {
-                cout << "invalid addon_choice";
+                cout << "invalid addon choice\n";
                 cleanup();
                 continue;
             }
-            else if (addon_choice == 0) // if 0 is pressed, continue to desserts
-                break;
-
-            cout << "amount > ";
-            if (!(cin >> addon_amount) || addon_amount <= 0) // mmm
+            else if (addon_choice == 0) 
             {
-                cout << "invalid amount";
+                if(exists_item(chosen_addons, menu_addons_types))
+                {
+                    newCat();
+                    cout << "you chose addons: \n";
+
+                    // loop through addons that are not the same that has been chosen before, and print out the price for further changes
+                    for (int i = 0; i < menu_addons_types; i++)
+                    {
+                        if (chosen_addons[i].amount > 0)
+                            cout << i + 1 << ". " << chosen_addons[i].name << "\t-\t" << setw(5) << " RM" << fixed << setprecision(2) << chosen_addons[i].price << "\t-\t" << chosen_addons[i].amount << "\n";
+                    }
+
+                    //put inside if functin because, if basket doesn't have item, don't need to ask to continue
+                    char conti = ' ';
+                    cout << "\ndo you wish to continue? (y/n)\n> ";
+                    if(cin >> conti || toupper(conti) == 'Y')
+                        break;
+                }
+                continue;
+            }
+
+            cout << "Addon amount > ";
+            if (!(cin >> addon_amount) || addon_amount == 0) // mmm
+            {
+                cout << "invalid amount\n";
                 cleanup();
                 continue;
             }
 
             // record it and loop until max_addons
-            if (chosen_addons[addon_choice - 1].amount == 0)
-            {
+            if (chosen_addons[addon_choice - 1].name.empty())
                 // just copy addons_menu into chosen_addons but make the amount = 0, see struct MenuItem
                 chosen_addons[addon_choice - 1] = addons_menu[addon_choice - 1].order();
 
-                unique_addons++;
-                cout << "added to basket!\n";
-            }
-
             // adding into "amount" inside chosen_addons, see struct OrderLine
-            chosen_addons[addon_choice - 1].addAmount(addon_amount);
+            if(addon_amount > 0)
+            {
+                chosen_addons[addon_choice - 1].addAmount(addon_amount);
+                cout << addon_amount << " of " << chosen_addons[addon_choice - 1].name << " added to basket!\n\n";
+            }
+            else if (addon_amount < 0)
+            {
+                if (chosen_addons[addon_choice - 1].subtractAmount(addon_amount))
+                {
+                    cout << addon_amount << " of " << chosen_addons[addon_choice - 1].name << " subtracted to basket!\n";
+                }else{
+                    cout <<"error";
+                    cleanup();
+                    continue;
+                }
+            }
             continue;
         }
-        cout << "you chose: \n";
 
-        // loop through addons that are not the same that has been chosen before, and print out the price for further changes
-        for (int i = 0; i < menu_addons_types; i++)
-        {
-            if (chosen_addons[i].amount > 0)
-                cout << i + 1 << ". " << chosen_addons[i].name << " - RM" << fixed << setprecision(2) << chosen_addons[i].price << " - " << chosen_addons[i].amount << "order\n";
-        }
-
-        // desserts section
+        /*
+        ===================
+        Desserts selection
+        ===================
+        */
+        newCat();
         cout << "pick your dessert (at least one is mandatory)\n";
         for (int z = 0; z < menu_desserts_types; z++)
         {
             cout << z + 1 << ". " << desserts_menu[z].name << " - RM" << fixed << setprecision(2) << desserts_menu[z].price << "\n";
         }
 
-        bool picked = false;
+        cout << "\npick your desserts or 0 to continue" << endl;
         while (true)
         {
             int dessert_choice = 0, dessert_amount = 0;
+            cout << "\ndessert > ";
             if (!(cin >> dessert_choice) || dessert_choice > menu_desserts_types || dessert_choice < 0)
             {
-                cout << "stop finding errors everywhere";
+                cout << "stop finding errors everywhere\n";
+                cout << "Invalid input, please enter a number between 0 and " << menu_desserts_types << ".\n";
                 cleanup();
                 continue;
             }
             else if (dessert_choice == 0)
             {
-                if (picked)
-                    break;
+                if (!(exists_item(chosen_desserts, menu_desserts_types)))
+                {
+                    cout << "pick your dessert (at least one is mandatory)\n";
+                    cleanup();
+                    continue;
+                }
 
-                cout << "pick your dessert (at least one is mandatory)\n";
-                cleanup();
+                if (exists_item(chosen_desserts, menu_desserts_types))
+                {
+                    cout << "you chose desserts: \n";
+
+                    // loop through desserts, and see which exists
+                    for (int i = 0; i < menu_desserts_types; i++)
+                    {
+                        if (chosen_desserts[i].amount > 0)
+                            cout << "\n"
+                                 << i + 1 << ". " << chosen_desserts[i].name << " - RM" << fixed << setprecision(2) << chosen_desserts[i].price << " - " << chosen_desserts[i].amount << "order\n";
+                    }
+                }
+
+                char conti = ' ';
+                cout << "\ndo you wish to continue? (y/n)\n> ";
+                if (cin >> conti && toupper(conti) == 'Y')
+                    break;
                 continue;
             }
 
-            cout << "Amount > ";
-            if (!(cin >> dessert_amount) || dessert_choice > menu_desserts_types || dessert_amount < 0)
+            cout << "Dessert amount > ";
+            if (!(cin >> dessert_amount) || dessert_choice > menu_desserts_types || dessert_amount == 0)
             {
                 cout << "cannot";
                 cleanup();
@@ -606,14 +744,25 @@ namespace
             }
 
             // also record and stop if press 0
-            //  record it and loop until max_addons
-            if (chosen_desserts[dessert_choice - 1].amount <= 0)
-            {
+            if (chosen_desserts[dessert_choice - 1].name.empty())
                 chosen_desserts[dessert_choice - 1] = desserts_menu[dessert_choice - 1].order();
+
+            if (dessert_amount > 0)
+            {
+                chosen_desserts[dessert_choice - 1].addAmount(dessert_amount);
+                cout << dessert_amount << chosen_desserts[dessert_choice - 1].name << " added to basket!\n";
             }
-            chosen_desserts[dessert_choice - 1].addAmount(dessert_amount);
-            cout << "added to basket!\n";
-            picked = true;
+            else if (dessert_amount < 0)
+            {
+                if (chosen_desserts[dessert_choice - 1].subtractAmount(dessert_amount))
+                {
+                    cout << dessert_amount << " " << chosen_desserts[dessert_choice - 1].name << " subtracted from basket!\n"; 
+                }else{
+                    (cout << "error\n");
+                    cleanup();
+                    continue;
+                }
+            }
             continue;
         }
 
@@ -631,7 +780,7 @@ namespace
         for (int i = 0; i < menu_desserts_types; i++)
             report[report_no].desserts_order[i] = chosen_desserts[i];
 
-        cout << "\n\npress any key to continue > ";
+        cout << "\npress any key to continue\n> ";
         cleanup();
         cin.get();
 
@@ -640,20 +789,36 @@ namespace
 
     void report(Report rep[], int max_rep)
     {
-        cout << "Report for Chong Ching Hotpot\n";
-        cout << "\n---------------------------------\n\n";
-        for(int i = 0; i < max_rep; i++)
+        int chosen_report = 0;
+        do
         {
-            if(rep[i].prices.net() > 0)
+            cout << "Report for Chong Ching Hotpot\n";
+            cout << "\n---------------------------------\n\n";
+            for(int i = 0; i < max_rep; i++)
             {
-                cout << i + 1 << ". ";
-                rep[i].report_Form_simple();
+                if(rep[i].prices.net() > 0)
+                {
+                    cout << i + 1 << ". ";
+                    rep[i].report_Form_simple();
+                }
             }
-        }
 
-        cout << "\ninput order number to view detailed report or 0 to continue >";
-        cleanup();
-        cin.get();
+            cout << "\ninput order number to view detailed report or 0 to continue\n> ";
+            if((cin >> chosen_report) || chosen_report > 0)
+            {
+                rep[chosen_report - 1].report_Form_detailed(chosen_report);
+            }
+            else{
+                cleanup();
+                cout << "\n\ninvalid input" << endl;
+                continue;
+            }
+            cout << "\npress any key to continue\n> ";
+            cleanup();
+            cin.get();
+            break;
+
+        }while (chosen_report == 0);
     }
 
     int code()
@@ -668,9 +833,9 @@ namespace
             logo();
 
             // display menu
-            cout << "\n---------------------------------\n\n";
+            cout << "\n========================================================================\n";
             cout << "Welcome to Chongqing Spicy Hotpot!\n" << endl;
-            cout << "1. order\n" << "2. report\n" << "3. exit\n > ";
+            cout << "1. order\n" << "2. report\n" << "3. exit\n> ";
 
             if(!(cin >> choice) || choice <= 0 || choice > 3)
                 cleanup();
